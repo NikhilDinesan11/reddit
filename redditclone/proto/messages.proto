@@ -1,0 +1,120 @@
+// proto/messages.proto
+syntax = "proto3";
+
+package messages;
+option go_package = "redditclone/internal/messages";
+
+import "google/protobuf/timestamp.proto";
+
+// Data structures
+message User {
+    string id = 1;
+    string username = 2;
+    int32 karma = 3;
+}
+
+message SubReddit {
+    string name = 1;
+    map<string, bool> members = 2;
+    repeated Post posts = 3;
+    map<string, bool> moderators = 4;
+}
+
+message Post {
+    string id = 1;
+    string title = 2;
+    string content = 3;
+    string author_id = 4;
+    string subreddit = 5;
+    int32 upvotes = 6;
+    int32 downvotes = 7;
+    repeated Comment comments = 8;
+    google.protobuf.Timestamp timestamp = 9;
+}
+
+message Comment {
+    string id = 1;
+    string content = 2;
+    string author_id = 3;
+    string parent_id = 4;
+    int32 upvotes = 5;
+    int32 downvotes = 6;
+    repeated Comment children = 7;
+    google.protobuf.Timestamp timestamp = 8;
+}
+
+message DirectMessage {
+    string id = 1;
+    string from_user_id = 2;
+    string to_user_id = 3;
+    string content = 4;
+    google.protobuf.Timestamp timestamp = 5;
+}
+
+// Request Messages
+message RegisterUserMsg {
+    string username = 1;
+}
+
+message CreateSubRedditMsg {
+    string name = 1;
+    string user_id = 2;
+}
+
+message JoinSubRedditMsg {
+    string subreddit = 1;
+    string user_id = 2;
+}
+
+message CreatePostMsg {
+    string title = 1;
+    string content = 2;
+    string subreddit = 3;
+    string author_id = 4;
+}
+
+message CreateCommentMsg {
+    string content = 1;
+    string post_id = 2;
+    string parent_id = 3;
+    string author_id = 4;
+}
+
+message VoteMsg {
+    string item_id = 1;
+    string user_id = 2;
+    bool is_upvote = 3;
+}
+
+message SendDirectMessageMsg {
+    string from_user_id = 1;
+    string to_user_id = 2;
+    string content = 3;
+}
+
+// Response messages
+message OperationResponse {
+    bool success = 1;
+    string id = 2;
+    string error = 3;
+    oneof result {
+        User user = 4;
+        SubReddit subreddit = 5;
+        Post post = 6;
+        Comment comment = 7;
+        DirectMessage message = 8;
+    }
+}
+
+// Simulation messages
+message StartSimulation {
+    int32 num_users = 1;
+}
+
+message SimulationStats {
+    int32 registered_users = 1;
+    int32 active_subreddits = 2;
+    int32 total_posts = 3;
+    int32 total_comments = 4;
+    int32 total_messages = 5;
+}
